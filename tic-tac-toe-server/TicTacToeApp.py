@@ -1,5 +1,11 @@
-class Server: 
-  ''' Server for playing Tic Tac Toe online
+import socket
+import sys
+import select
+import constants
+import GameManager
+
+class TicTacToeApp: 
+  ''' TicTacToeApp for playing Tic Tac Toe online
 
       Includes two methods: start() and kill(), to start and kill the server respectively.
 
@@ -42,7 +48,79 @@ class Server:
         One final note is that the server does not save the state of the game between the players.
         It is expected that the players do this. '''
 
+  def __init__(self, port):
+    self.port = port
+    self.server = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+    self.game_manager = GameManager()
+
+  def start(self):
+    self.server.bind(('',self.port))
+
+  def get_messages():
+    ''' Returns when user enters something in stdin '''
+    inputs = [self.server, sys.stdin]
+
+    while True:
+      ins, outs, exs = select.select(inputs,[],[])
+      
+      for i in ins:
+        if i == sys.stdin:
+          return
+        elif i == self.server:
+          (msg,addr) = self.server.recvfrom(1024)
+
+          # Message receival confirmation
+          self.send_message(constants.MESSAGE_RECEIVED, addr)
+
+          # Deal with message
+          game_manager.resolve_command(msg, addr);
+
+  def resolve_command(self, command, addr):
+    cmds = msg.decode().split()
     
+    res = True
+
+    if (cmds is None): 
+      self.send_message(constants.INVALID_COMMAND, addr)
+      res = False
+    elif(cmds[0]=="REG"):
+      msg = register.self.game_manager(cmds[1],addr)
+    elif(cmds[0]=="LST"):
+      msg = list_players.self.game_manager(addr)
+    elif(cmds[0]=="INV"):
+      msg = invite.self.game_manager(cmds[1], addr)
+    elif(cmds[0]=="ACP"):
+      res, msg = accept.self.game_manager(cmds[1], cmds[2], addr)
+    elif(cmds[0]=="PLA"):
+      res, msg = play.self.game_manager(cmds[1], cmds[2], cmds[3], cmds[4], addr)      
+    else:
+      self.send_message(constants.INVALID_COMMAND, addr)
+      res = False
+
+    if (res): self.send_message(msg, addr)
+
+  def send_message(self, msg, addr):
+    sock.sendto(msg.encode(), addr)
+
+  def kill(self):
+    self.server.close()
+
+### SERVER APPLICATION ###
+if __name__ == "__main__":
+  server_app = TicTacToeApp(constants.SERVER_PORT)
+  game_manager = GameManager()
+
+  print("Starting the server ...")
+  server_app.start()
+
+  print("Enter a key to shutdown")
+  game_manager.get_messages()
+
+  print("Shutting down...")
+  server_app.kill()
+  print("Shut down with success.")
+
+
 
 
 
