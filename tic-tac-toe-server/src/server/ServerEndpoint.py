@@ -96,7 +96,7 @@ class ServerEndpoint:
     elif(cmds[0]=="INV"):
       msg, addr = self.game_manager.invite(cmds[1], addr)
     elif(cmds[0]=="ACP"):
-      res, msg, addr = self.game_manager.accept(cmds[1], cmds[2], addr)
+      msg, addr = self.game_manager.accept(cmds[1], cmds[2], addr)
     elif(cmds[0]=="PLA"):
       res, msg, addr = self.game_manager.play(cmds[1], cmds[2], cmds[3], cmds[4], addr)      
     else:
