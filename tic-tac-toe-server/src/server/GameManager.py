@@ -91,14 +91,21 @@ class GameManager:
 
 
   def accept(self, other_player, accepted, addr):
-    ''' name: string, name of the opponent that made the invite
-        accepts: bool, True if accepts game request. False otherwise.
+    ''' other_player: string, name of the opponent that made the invite
+        accepts: string, True if accepts game request. False otherwise.
+          valid formats for True: 'True'; 'true'; 't'; '1'
+          valid formats for False: 'False'; 'false'; 'f'; '0'
         addr: string, address of the caller
 
         returns: [msg, send_addr]
           msg: msg to be sent
           send_addr: to whom the message should be sent. If error, to this caller
             If no error, to the other user (player parameter)'''
+
+    # check if accepted has the correct format
+    if   accepted in ('True', 'true', 't', '1'): accepted = True 
+    elif accepted in ('False', 'false', 'f', '0'): accepted = False
+    else: return GameManagerMessages.INVALID_COMMAND
 
     # check if caller is registered
     if addr not in clients:
@@ -126,11 +133,13 @@ class GameManager:
     else:
       caller_state[0] = caller_state[1] = caller_state[2] = False
       other_player_state[0] = other_player_state[1] = other_player_state[2] = False
-      
+
     # return message informing the inviter of the decision of his opponent
     return "ACP " + caller + " " + accepted, addrs[other_player]
 
-
+def play(self, other_player, row, col, is_finito):
+  ''' other_player: string, opponent
+      row: string,
 
 
 
