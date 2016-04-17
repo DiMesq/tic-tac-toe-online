@@ -1,11 +1,12 @@
 import socket
 import sys
 import select
-import constants
+
+import server_contants
 from GameManager import GameManager
 
-class TicTacToeApp: 
-  ''' TicTacToeApp for playing Tic Tac Toe online
+class ServerEndpoint: 
+  ''' ServerEndpoint for playing Tic Tac Toe online
 
       Includes two methods: start() and kill(), to start and kill the server respectively.
 
@@ -55,7 +56,7 @@ class TicTacToeApp:
 
   def __init__(self, port):
     self.port = port
-    self.server = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+    self.server = socket.socket(server_constants.SOCKET_TYPE, server_constants.SOCKET_PROTOCOL)
     self.game_manager = GameManager()
 
   def start(self):
@@ -75,7 +76,7 @@ class TicTacToeApp:
           (msg,addr) = self.server.recvfrom(1024)
 
           # Message receival confirmation
-          self.send_message(constants.MESSAGE_RECEIVED, addr)
+          self.send_message(server_constants.MESSAGE_RECEIVED, addr)
 
           # Deal with message
           self.game_manager.resolve_command(msg, addr);
@@ -86,7 +87,7 @@ class TicTacToeApp:
     res = True
 
     if (cmds is None): 
-      self.send_message(constants.INVALID_COMMAND, addr)
+      self.send_message(server_constants.INVALID_COMMAND, addr)
       res = False
     elif(cmds[0]=="REG"):
       msg = self.game_manager.register(cmds[1],addr)
@@ -99,7 +100,7 @@ class TicTacToeApp:
     elif(cmds[0]=="PLA"):
       res, msg, addr = self.game_manager.play(cmds[1], cmds[2], cmds[3], cmds[4], addr)      
     else:
-      self.send_message(constants.INVALID_COMMAND, addr)
+      self.send_message(server_constants.INVALID_COMMAND, addr)
       res = False
 
     if (res): self.send_message(msg, addr)
@@ -109,23 +110,3 @@ class TicTacToeApp:
 
   def kill(self):
     self.server.close()
-
-### SERVER APPLICATION ###
-if __name__ == "__main__":
-  server_app = TicTacToeApp(constants.SERVER_PORT)
-
-  print("Starting the server ...")
-  server_app.start()
-
-  print("Enter a key to shutdown")
-  server_app.get_messages()
-
-  print("Shutting down...")
-  server_app.kill()
-  print("Shut down with success.")
-
-
-
-
-
-
