@@ -66,8 +66,7 @@ class GameManager:
     inviting_state = games[inviting]
 
     # check if user is occupied
-    if inviting_state[0]:
-      return GameManagerMessages.USER_OCCUPIED, addr
+    if inviting_state[0]: return GameManagerMessages.USER_OCCUPIED, addr
 
     # check if player invited exists and is not occupied
     if invited not in addrs:
@@ -92,9 +91,7 @@ class GameManager:
 
   def accept(self, other_player, accepted, addr):
     ''' other_player: string, name of the opponent that made the invite
-        accepts: string, True if accepts game request. False otherwise.
-          valid formats for True: 'True'; 'true'; 't'; '1'
-          valid formats for False: 'False'; 'false'; 'f'; '0'
+        accepted: string, 'true' if accepts game request. 'false' otherwise.
         addr: string, address of the caller
 
         returns: [msg, send_addr]
@@ -103,8 +100,7 @@ class GameManager:
             If no error, to the other user (player parameter)'''
 
     # check if accepted has the correct format
-    if   accepted in ('True', 'true', 't', '1'): accepted = True 
-    elif accepted in ('False', 'false', 'f', '0'): accepted = False
+    if (accepted in ('true', 'false'): accepted = (accepted == 'true' ? True : False)
     else: return GameManagerMessages.INVALID_COMMAND
 
     # check if caller is registered
@@ -115,12 +111,10 @@ class GameManager:
     caller_state = games[caller]
 
     # check if caller is in position to accept a request
-    if not(caller_state[0] and caller_state[3]):
-      return USER_CANT_ACCEPT, addr
+    if not(caller_state[0] and not caller_state[1] and caller_state[2]): return USER_CANT_ACCEPT, addr
 
     # check if refered player matches the player that made the initial invite
-    if (caller_state[3] != other_player):
-      return REQUEST_PLAYER_MISMATCH, addr
+    if (caller_state[3] != other_player): return REQUEST_PLAYER_MISMATCH, addr
 
     other_player_state = games[other_player]
 
@@ -133,13 +127,37 @@ class GameManager:
     else:
       caller_state[0] = caller_state[1] = caller_state[2] = False
       other_player_state[0] = other_player_state[1] = other_player_state[2] = False
+      caller_state[3] = other_player_state[3] = None
 
     # return message informing the inviter of the decision of his opponent
     return "ACP " + caller + " " + accepted, addrs[other_player]
 
 def play(self, other_player, row, col, is_finito):
   ''' other_player: string, opponent
-      row: string,
+      row: string, the row of the play (1, 2 or 3)
+      col: string, the column of the play (1, 2 or 3)
+      is_finito: string, 'true' if play ends the game and 'false' if not
+
+      returns [msg, send_to] '''
+
+  # check if accepted has the correct format
+  if (is_finito in ('true', 'false'): is_finito = (is_finito == 'true' ? True : False)
+  else: return GameManagerMessages.INVALID_COMMAND
+
+  player = clients[addr]
+  player_state = games[player]
+
+  # check if player is in position to make a play
+
+
+  # check if the other player is specified correctly
+  # check if play has the correct format
+  # check if play is out of bounds
+
+  # if everything ok change the states of the players and send the play to other player
+
+
+        
 
 
 
