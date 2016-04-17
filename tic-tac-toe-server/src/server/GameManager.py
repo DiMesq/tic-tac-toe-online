@@ -3,7 +3,7 @@ class GameManager:
   def __init__(self):
     self.clients = {} # addr: name
     self.addrs = {}   # name: addr
-    self.games = {}   # name: (is_occupied, opponent, in_game, is_turn)
+    self.games = {}   # name: (is_occupied, in_game, is_turn, opponent)
 
     # self.games: in_game | is_turn  | player_state                         |
     #             --------+----------+--------------------------------------|
@@ -53,11 +53,9 @@ class GameManager:
         addr: string, address of the caller (inviting player)
 
         returns [msg, send_addr]
-          msg: the msg to be sent to the invited player
-          send_addr: the address of the invited player
-
-        In case of error msg will have the error msg and send_addr
-        will simply be addr (the addr of the inviting player ''' 
+          msg: the msg to be sent
+          send_addr: to whom the message should be sent. If error, to this caller
+            If no error, to the invited player''' 
 
     # check if user is registered
     if addr not in clients:
@@ -79,20 +77,58 @@ class GameManager:
       return GameManagerMessages.OTHER_USER_OCCUPIED, addr
 
     # set inviting user to occupied and as requesting turn
-    inviting_state[0] = inviting_state[2] = True
-    inviting_state[3] = False
-    inviting_state[1] = invited
+    inviting_state[0] = inviting_state[1] = True
+    inviting_state[2] = False
+    inviting_state[3] = invited
 
     # set invited user to occupied and as needing to respond
-    inviting_state[0] = inviting_state[3] = True
-    inviting_state[2] = False
-    inviting_state[1] = inviting
+    inviting_state[0] = inviting_state[2] = True
+    inviting_state[1] = False
+    inviting_state[3] = inviting
 
     #return send message to invited player
     return GameManagerMessages.USER_INVITE + " " + inviting, addrs[invited]
 
 
-  
+  def accept(self, other_player, accepted, addr):
+    ''' name: string, name of the opponent that made the invite
+        accepts: bool, True if accepts game request. False otherwise.
+        addr: string, address of the caller
+
+        returns: [msg, send_addr]
+          msg: msg to be sent
+          send_addr: to whom the message should be sent. If error, to this caller
+            If no error, to the other user (player parameter)'''
+
+    # check if caller is registered
+    if addr not in clients:
+      return GameManagerMessages.USER_NOT_REGISTERED, addr
+
+    caller = clients[addr]
+    caller_state = games[caller]
+
+    # check if caller is in position to accept a request
+    if not(caller_state[0] and caller_state[3]):
+      return USER_CANT_ACCEPT, addr
+
+    # check if refered player matches the player that made the initial invite
+    if (caller_state[3] != other_player):
+      return REQUEST_PLAYER_MISMATCH, addr
+
+    other_player_state = games[other_player]
+
+    # put players in the correct state for game if user accepted
+    if accepted:
+      caller_state[1] = True, caller_state[2] = False
+      other_player[2] = True 
+
+    # otherwise put players in begin state
+    else:
+      caller_state[0] = caller_state[1] = caller_state[2] = False
+      other_player_state[0] = other_player_state[1] = other_player_state[2] = False
+      
+    # return message informing the inviter of the decision of his opponent
+    return "ACP " + caller + " " + accepted, addrs[other_player]
 
 
 

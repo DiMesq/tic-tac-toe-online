@@ -7,6 +7,9 @@ USER_NOT_REGISTERED = "Error: you are not registered. Please register first."
 OTHER_USER_NOT_REGISTERED = "Error: requested user not registered."
 USER_OCCUPIED = "Error: you are occupied at the moment. Requested command not valid."
 OTHER_USER_OCCUPIED = "Error: invited user is occupied."
+USER_CANT_ACCEPT = "Error: not in position to accept a request."
+REQUEST_PLAYER_MISMATCH = "Error: specified player doesn't match the player"
+  + " that made the invite."
 
 # responses
 USER_REGISTER = "REG"

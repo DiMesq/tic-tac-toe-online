@@ -70,14 +70,11 @@ class ServerEndpoint:
       ins, outs, exs = select.select(inputs,[],[])
       
       for i in ins:
-        if i == sys.stdin:
-          return
+        if i == sys.stdin: return
         elif i == self.server:
           (msg,addr) = self.server.recvfrom(1024)
-
           # Message receival confirmation
           self.send_message(server_constants.MESSAGE_RECEIVED, addr)
-
           # Deal with message
           self.game_manager.resolve_command(msg, addr);
 
@@ -86,18 +83,17 @@ class ServerEndpoint:
     
     msg = server_constants.INVALID_COMMAND
 
-    if (cmds is None): 
-      pass
-    elif(cmds[0]=="REG"):
-      if (len(cmds) == 2): msg = self.game_manager.register(cmds[1],addr)
-    elif(cmds[0]=="LST"):
-      if (len(cmds) == 1): msg = self.game_manager.list(addr)
-    elif(cmds[0]=="INV"):
-      if (len(cmds) == 2): msg, addr = self.game_manager.invite(cmds[1], addr)
-    elif(cmds[0]=="ACP"):
-      if (len(cmds) == 3): msg, addr = self.game_manager.accept(cmds[1], cmds[2], addr)
-    elif(cmds[0]=="PLA"):
-      if (len(cmds) == 5): msg, addr = self.game_manager.play(cmds[1], cmds[2], cmds[3], cmds[4], addr)      
+    if (cmds is None): pass
+    elif(cmds[0]=="REG" and len(cmds)==2):
+      msg = self.game_manager.register(cmds[1],addr)
+    elif(cmds[0]=="LST" and len(cmds)==1):
+      msg = self.game_manager.list(addr)
+    elif(cmds[0]=="INV" and len(cmds)==2):
+      msg, addr = self.game_manager.invite(cmds[1], addr)
+    elif(cmds[0]=="ACP" and len(cmds)==3):
+      msg, addr = self.game_manager.accept(cmds[1], cmds[2], addr)
+    elif(cmds[0]=="PLA" and len(cmds)==5):
+      msg, addr = self.game_manager.play(cmds[1], cmds[2], cmds[3], cmds[4], addr)
     
     self.send_message(msg, addr)
     
