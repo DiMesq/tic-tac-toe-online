@@ -82,29 +82,25 @@ class ServerEndpoint:
           self.game_manager.resolve_command(msg, addr);
 
   def resolve_command(self, command, addr):
-    cmds = msg.decode().split()
+    cmds = command.decode().split()
     
-    res = True
+    msg = server_constants.INVALID_COMMAND
 
     if (cmds is None): 
-      self.send_message(server_constants.INVALID_COMMAND, addr)
-      res = False
+      pass
     elif(cmds[0]=="REG"):
-      msg = self.game_manager.register(cmds[1],addr)
+      if (len(cmds) == 2): msg = self.game_manager.register(cmds[1],addr)
     elif(cmds[0]=="LST"):
-      msg = self.game_manager.list(addr)
+      if (len(cmds) == 1): msg = self.game_manager.list(addr)
     elif(cmds[0]=="INV"):
-      msg, addr = self.game_manager.invite(cmds[1], addr)
+      if (len(cmds) == 2): msg, addr = self.game_manager.invite(cmds[1], addr)
     elif(cmds[0]=="ACP"):
-      msg, addr = self.game_manager.accept(cmds[1], cmds[2], addr)
+      if (len(cmds) == 3): msg, addr = self.game_manager.accept(cmds[1], cmds[2], addr)
     elif(cmds[0]=="PLA"):
-      res, msg, addr = self.game_manager.play(cmds[1], cmds[2], cmds[3], cmds[4], addr)      
-    else:
-      self.send_message(server_constants.INVALID_COMMAND, addr)
-      res = False
-
-    if (res): self.send_message(msg, addr)
-
+      if (len(cmds) == 5): msg, addr = self.game_manager.play(cmds[1], cmds[2], cmds[3], cmds[4], addr)      
+    
+    self.send_message(msg, addr)
+    
   def send_message(self, msg, addr):
     sock.sendto(msg.encode(), addr)
 
