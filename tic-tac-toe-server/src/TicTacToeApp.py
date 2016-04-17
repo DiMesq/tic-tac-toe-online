@@ -1,5 +1,8 @@
+import sys
+
+sys.path.insert(0, 'server')
 from ServerEndpoint import ServerEndpoint
-import server/server_constants
+import server_constants
 
 ### SERVER APPLICATION ###
 if __name__ == "__main__":

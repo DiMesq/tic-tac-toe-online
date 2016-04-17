@@ -2,7 +2,7 @@ import socket
 import sys
 import select
 
-import server_contants
+import server_constants
 from GameManager import GameManager
 
 class ServerEndpoint: 
@@ -110,3 +110,4 @@ class ServerEndpoint:
 
   def kill(self):
     self.server.close()
+

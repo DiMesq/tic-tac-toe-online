@@ -1,3 +1,5 @@
+import socket
+
 #Server constants
 SERVER_PORT = 12000
 
