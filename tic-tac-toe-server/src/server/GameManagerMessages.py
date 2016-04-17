@@ -8,8 +8,13 @@ OTHER_USER_NOT_REGISTERED = "Error: requested user not registered."
 USER_OCCUPIED = "Error: you are occupied at the moment. Requested command not valid."
 OTHER_USER_OCCUPIED = "Error: invited user is occupied."
 USER_CANT_ACCEPT = "Error: not in position to accept a request."
-REQUEST_PLAYER_MISMATCH = "Error: specified player doesn't match the player"
+REQUEST_PLAYER_MISMATCH = "Error: specified player doesn't match the player"\
   + " that made the invite."
+USER_CANT_PLAY = "Error: not in position to make a play."
+INVALID_PLAY = "Error: Invalid play. The possible values for the row and col"\
+  + " are: '1', '2' and '3'."
+
+
 
 # responses
 USER_REGISTER = "REG"

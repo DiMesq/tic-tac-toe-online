@@ -100,7 +100,8 @@ class GameManager:
             If no error, to the other user (player parameter)'''
 
     # check if accepted has the correct format
-    if (accepted in ('true', 'false'): accepted = (accepted == 'true' ? True : False)
+    if accepted in ('true', 'false'): 
+      accepted_bool = True if accepted == 'true' else False
     else: return GameManagerMessages.INVALID_COMMAND
 
     # check if caller is registered
@@ -111,7 +112,8 @@ class GameManager:
     caller_state = games[caller]
 
     # check if caller is in position to accept a request
-    if not(caller_state[0] and not caller_state[1] and caller_state[2]): return USER_CANT_ACCEPT, addr
+    if not(caller_state[0] and not caller_state[1] and caller_state[2]):
+      return USER_CANT_ACCEPT, addr
 
     # check if refered player matches the player that made the initial invite
     if (caller_state[3] != other_player): return REQUEST_PLAYER_MISMATCH, addr
@@ -119,15 +121,15 @@ class GameManager:
     other_player_state = games[other_player]
 
     # put players in the correct state for game if user accepted
-    if accepted:
-      caller_state[1] = True, caller_state[2] = False
+    if accepted_bool:
+      caller_state[1] = True 
+      caller_state[2] = False
       other_player[2] = True 
 
     # otherwise put players in begin state
     else:
-      caller_state[0] = caller_state[1] = caller_state[2] = False
-      other_player_state[0] = other_player_state[1] = other_player_state[2] = False
-      caller_state[3] = other_player_state[3] = None
+      self.__default(caller_state)
+      self.__default(other_player_state)
 
     # return message informing the inviter of the decision of his opponent
     return "ACP " + caller + " " + accepted, addrs[other_player]
@@ -141,20 +143,52 @@ def play(self, other_player, row, col, is_finito):
       returns [msg, send_to] '''
 
   # check if accepted has the correct format
-  if (is_finito in ('true', 'false'): is_finito = (is_finito == 'true' ? True : False)
+  if is_finito in ('true', 'false'): 
+    is_finito_bool = True if is_finito == 'true' else False
   else: return GameManagerMessages.INVALID_COMMAND
 
   player = clients[addr]
   player_state = games[player]
 
   # check if player is in position to make a play
-
+  if not(player_state[0] and player_state[1] and player_state[2]):
+    return GameManagerMessages.USER_CANT_PLAY, addr
 
   # check if the other player is specified correctly
-  # check if play has the correct format
-  # check if play is out of bounds
+  if other_player != player_state[3]:
+    return GameManagerMessages.REQUEST_PLAYER_MISMATCH, addr
 
-  # if everything ok change the states of the players and send the play to other player
+  other_player_state = games[other_player]
+
+  # check if play has the correct format
+  try:
+    row = int(row)
+    col = int(col)
+  except ValueError:
+    return GameManagerMessages.INVALID_PLAY, addr
+
+  # check if play is out of bounds
+  if row > 3 or row < 1 or col > 3 or col < 1:
+    return GameManagerMessages.INVALID_PLAY, addr
+
+  # if game finished return players to default values
+  if (is_finito_bool):
+    self.__default(player_state)
+    self.__default(other_player_state)
+  # switch roles if not finished
+  else:
+    player_state[2] = False
+    other_player_state[2] = True
+
+  # return the appropiate message
+  return "PLA " + player + " " + str(row) + " " + str(col) + " "\
+    + is_finito,\
+    addrs[other_player]
+
+
+def __default(self, state1):
+  state1[0] = state1[1] = state1[2] = False
+  state1[3] = None
 
 
         
