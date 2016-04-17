@@ -2,7 +2,7 @@ import socket
 import sys
 import select
 import constants
-import GameManager
+from GameManager import GameManager
 
 class TicTacToeApp: 
   ''' TicTacToeApp for playing Tic Tac Toe online
@@ -17,7 +17,7 @@ class TicTacToeApp:
                               Otherwise it respondes with "REG nok <error message>".
 
         - "LST" -> ask for a list of players. The returned list has the format 
-                   "LST <username1> <boolean>, <username2> <boolean>, [...]".
+                   "LST <username1> <boolean> <username2> <boolean> [...]".
                    Where <usernamex> represents another registered user. The <boolean>
                    field is True for the users that are available to play a game or False 
                    otherwise. 
@@ -43,7 +43,12 @@ class TicTacToeApp:
         sends a message to the server.
 
         A registered user should also be listening to the server in order to be able to receive
-        game requests from other players.
+        game requests from other players. These request will have the format "INV <username>", 
+        where username is the player making the invite. The response is has specified above.
+
+        Also the players in game must be listening for the other player's moves. The server communicates 
+        a move from the opponent with "PLA <row> <column> <boolean>", where boolean indicates if the play
+        terminates the game or not.
 
         One final note is that the server does not save the state of the game between the players.
         It is expected that the players do this. '''
@@ -56,7 +61,7 @@ class TicTacToeApp:
   def start(self):
     self.server.bind(('',self.port))
 
-  def get_messages():
+  def get_messages(self):
     ''' Returns when user enters something in stdin '''
     inputs = [self.server, sys.stdin]
 
@@ -73,7 +78,7 @@ class TicTacToeApp:
           self.send_message(constants.MESSAGE_RECEIVED, addr)
 
           # Deal with message
-          game_manager.resolve_command(msg, addr);
+          self.game_manager.resolve_command(msg, addr);
 
   def resolve_command(self, command, addr):
     cmds = msg.decode().split()
@@ -84,15 +89,15 @@ class TicTacToeApp:
       self.send_message(constants.INVALID_COMMAND, addr)
       res = False
     elif(cmds[0]=="REG"):
-      msg = register.self.game_manager(cmds[1],addr)
+      msg = self.game_manager.register(cmds[1],addr)
     elif(cmds[0]=="LST"):
-      msg = list_players.self.game_manager(addr)
+      msg = self.game_manager.list(addr)
     elif(cmds[0]=="INV"):
-      msg = invite.self.game_manager(cmds[1], addr)
+      msg, addr = self.game_manager.invite(cmds[1], addr)
     elif(cmds[0]=="ACP"):
-      res, msg = accept.self.game_manager(cmds[1], cmds[2], addr)
+      res, msg, addr = self.game_manager.accept(cmds[1], cmds[2], addr)
     elif(cmds[0]=="PLA"):
-      res, msg = play.self.game_manager(cmds[1], cmds[2], cmds[3], cmds[4], addr)      
+      res, msg, addr = self.game_manager.play(cmds[1], cmds[2], cmds[3], cmds[4], addr)      
     else:
       self.send_message(constants.INVALID_COMMAND, addr)
       res = False
@@ -108,13 +113,12 @@ class TicTacToeApp:
 ### SERVER APPLICATION ###
 if __name__ == "__main__":
   server_app = TicTacToeApp(constants.SERVER_PORT)
-  game_manager = GameManager()
 
   print("Starting the server ...")
   server_app.start()
 
   print("Enter a key to shutdown")
-  game_manager.get_messages()
+  server_app.get_messages()
 
   print("Shutting down...")
   server_app.kill()
