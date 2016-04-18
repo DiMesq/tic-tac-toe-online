@@ -76,7 +76,7 @@ class ServerEndpoint:
           # Message receival confirmation
           self.send_message(server_constants.MESSAGE_RECEIVED, addr)
           # Deal with message
-          self.game_manager.resolve_command(msg, addr);
+          self.resolve_command(msg, addr);
 
   def resolve_command(self, command, addr):
     cmds = command.decode().split()
@@ -98,7 +98,7 @@ class ServerEndpoint:
     self.send_message(msg, addr)
     
   def send_message(self, msg, addr):
-    sock.sendto(msg.encode(), addr)
+    self.server.sendto(msg.encode(), addr)
 
   def kill(self):
     self.server.close()
