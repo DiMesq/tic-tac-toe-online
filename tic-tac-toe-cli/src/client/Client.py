@@ -87,10 +87,15 @@ class Client:
 
 
     def read_play(self):
-        print("Column: ")
-        column = int(sys.stdin.readline())
-        print("Row: ")
-        row = int(sys.stdin.readline())
+        while (1):
+            try:
+                print("Column: ")
+                column = int(sys.stdin.readline())
+                print("Row: ")
+                row = int(sys.stdin.readline())
+                break
+            except ValueError:
+                print("Invalid play. Please go again.")
         while not(self.currentGame.play(column, row)):
             print("Invalid play")
             print("Column: ")
