@@ -91,8 +91,14 @@ class Client:
             try:
                 print("Column: ")
                 column = int(sys.stdin.readline())
+                if column not in (1,2,3):
+                    print("Invalid play. Please go again.")
+                    continue
                 print("Row: ")
                 row = int(sys.stdin.readline())
+                if row not in (1,2,3):
+                    print("Invalid play. Please go again.")
+                    continue
                 break
             except ValueError:
                 print("Invalid play. Please go again.")
