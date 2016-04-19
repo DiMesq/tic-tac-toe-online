@@ -50,6 +50,7 @@ class Client:
                             self.request_list()
                             continue
                         elif res=="0":
+                            self.exit()
                             return
                         else:
                             print("\n Escolha inválida")
@@ -83,6 +84,7 @@ class Client:
                     if msg[0] == ClientMessages.RCV_PLAY:
                         self.recv_play(msg)
                         continue
+
 
 
 
@@ -133,9 +135,19 @@ class Client:
         if msg[0] != "REG":
             return False
         if msg[1] == "ok":
+            self.username = username
             return True
         else:
             return False
+
+    def exit(self):
+        msg = "EXT " + self.username
+        self.send_message(msg)
+        msg = self.recv_message()
+        if msg == "EXT ok":
+            print("Successfully unregistered")
+        else:
+            print("Error unregistering")
 
     def request_list(self):
         self.send_message(ClientMessages.LIST_USERS)

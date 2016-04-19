@@ -82,7 +82,6 @@ class ServerEndpoint:
     cmds = command.decode().split()
 
     msg = server_constants.INVALID_COMMAND
-
     if (cmds is None): pass
     elif(cmds[0]=="REG" and len(cmds)==2):
       msg = self.game_manager.register(cmds[1],addr)
@@ -94,7 +93,8 @@ class ServerEndpoint:
       msg, addr = self.game_manager.accept(cmds[1], cmds[2], addr)
     elif(cmds[0]=="PLA" and len(cmds)==5):
       msg, addr = self.game_manager.play(cmds[1], cmds[2], cmds[3], cmds[4], addr)
-      print(msg)
+    elif(cmds[0]=="EXT" and len(cmds)==2):
+      msg = self.game_manager.unregister(cmds[1], addr)
 
     self.send_message(msg, addr)
 

@@ -33,6 +33,16 @@ class GameManager:
       self.games[name] = [False, None, False, False]
       return msg + " ok"
 
+  def unregister(self, name, addr):
+    msg = GameManagerMessages.USER_EXIT
+    if (name not in self.addrs) or (addr not in self.clients):
+      return msg + " nok " + GameManagerMessages.INVALID_USERNAME
+    else:
+       del self.clients[addr]
+       del self.addrs[name]
+       del self.games[name]
+       return msg + " ok"
+
   def list(self, addr):
     msg = "LST"
 
@@ -57,7 +67,7 @@ class GameManager:
         returns [msg, send_addr]
           msg: the msg to be sent
           send_addr: to whom the message should be sent. If error, to this caller
-            If no error, to the invited player''' 
+            If no error, to the invited player'''
 
     # check if user is registered
     if addr not in self.clients:
@@ -72,7 +82,7 @@ class GameManager:
 
     # check if user is not inviting himself
     if inviting == invited: return GameManagerMessages.INVALID_USERNAME, addr
-    
+
     # check if player invited exists and is not occupied
     if invited not in self.addrs:
       return GameManagerMessages.OTHER_USER_NOT_REGISTERED, addr
@@ -117,7 +127,7 @@ class GameManager:
       return GameManagerMessages.USER_CANT_ACCEPT, addr
 
     # check if accepted has the correct format
-    if accepted in ('True', 'False'): 
+    if accepted in ('True', 'False'):
       accepted_bool = True if accepted == 'True' else False
     else: return GameManagerMessages.INVALID_COMMAND, addr
 
@@ -128,9 +138,9 @@ class GameManager:
 
     # put players in the correct state for game if user accepted
     if accepted_bool:
-      caller_state[1] = True 
+      caller_state[1] = True
       caller_state[2] = False
-      other_player_state[2] = True 
+      other_player_state[2] = True
 
     # otherwise put players in begin state
     else:
@@ -147,13 +157,13 @@ class GameManager:
         is_finito: string, 'true' if play ends the game and 'false' if not
 
         returns [msg, send_to] '''
-    
+
     # check if caller is registered
     if addr not in self.clients:
       return GameManagerMessages.USER_NOT_REGISTERED, addr
 
     # check if accepted has the correct format
-    if is_finito in ('True', 'False'): 
+    if is_finito in ('True', 'False'):
       is_finito_bool = True if is_finito == 'True' else False
     else: return GameManagerMessages.INVALID_COMMAND, addr
 
@@ -199,6 +209,3 @@ class GameManager:
   def __default(self, state1):
     state1[0] = state1[1] = state1[2] = False
     state1[3] = None
-
-
-      
